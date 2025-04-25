@@ -3,28 +3,33 @@
 using namespace std;
 using ll = long long;
 
+const int MAXN = 1002;
 int main(){
-    int n; cin >> n;
-    int arr[n];
-    for(int &el: arr) cin >> el;
-    map<int, vector<int>> mp;
-    string ans;
-    int valid_count = 0;
-    for(int i = 0; i < n; i++) mp[arr[i]].push_back(i);
-    for(auto &p: mp){
-        int diff = p.second.size() == 1 ? 0 : p.second[1] - p.second[0];
-        bool valid = true;
-        for(int i = 2; i < p.second.size(); i++){
-            if(p.second[i] - p.second[i-1] != diff){
-                valid = false;
-                break;
+    int tc; cin >> tc;
+    while(tc--){
+        int n; cin >> n;
+        int freq[MAXN];
+        for(int i = 0; i < MAXN; i++) freq[i] = i;
+        int arr[n];
+        vector<int> b;
+        for(int &el: arr) cin >> el;
+        sort(arr, arr + n, greater<int>());
+        int curr = 0;
+        for(int el: arr){
+            if(b.size() > 0 && b[curr] != freq[el]){
+                b.push_back(freq[el]);
+                freq[el]++;
+                for(int j = el + 1; j < MAXN; j++) freq[j] = max(freq[j], freq[j-1]);
+                sort(b.begin(), b.end(), greater<int>());
+            }else{
+                freq[curr] -= 1;
+                for(int j = el + 1; j < MAXN; j++) freq[j] = min(freq[j], freq[j-1]);
+                curr++;
             }
         }
-        if(valid){
-            valid_count += 1;
-            ans += to_string(p.first) + " " + to_string(diff) + '\n'; 
-        }
-    } 
-    cout << valid_count << '\n'  << ans;
+        if(curr > n / 2) cout << "Yes";
+        else cout << "No";
+        cout << '\n';
+    }
     return 0;
 }
